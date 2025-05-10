@@ -20,6 +20,7 @@ dependencies {
     implementation("javax.servlet:javax.servlet-api:4.0.1")
     implementation("org.apache.logging.log4j:log4j-api:$LOG4J_VERSION")
     implementation("org.apache.logging.log4j:log4j-core:$LOG4J_VERSION")
+    implementation("org.apache.commons:commons-compress:1.27.1")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$JUNIT_VERSION")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$JUNIT_VERSION")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$JUNIT_VERSION")

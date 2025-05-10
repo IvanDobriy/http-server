@@ -8,6 +8,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchService;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,6 +25,7 @@ public class FileListener {
     private final Logger logger = LogManager.getLogger(this.getClass().getName());
     private final ExecutorService executorService;
     private final WatchService watchService;
+    private final Path path;
     private Callback onCreate = null;
     private Callback onDelete = null;
 
@@ -32,6 +34,7 @@ public class FileListener {
             Objects.requireNonNull(path);
             executorService = Executors.newSingleThreadExecutor();
             watchService = FileSystems.getDefault().newWatchService();
+            this.path = path;
             path.register(watchService, ENTRY_CREATE, ENTRY_DELETE);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -54,14 +57,14 @@ public class FileListener {
                     for (WatchEvent<?> event : key.pollEvents()) {
                         final var context = (Path) event.context();
                         if (event.kind() == ENTRY_CREATE && onCreate != null) {
-                            onCreate.execute(context);
+                            onCreate.execute(path.resolve(context));
                         } else if (event.kind() == ENTRY_DELETE && onDelete != null) {
-                            onDelete.execute(context);
+                            onDelete.execute(path.resolve(context));
                         }
                     }
                     key.reset();
                 } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                    logger.warn("unhandled exception: {}, stacktrace: {}", e.getMessage(), Arrays.asList(e.getStackTrace()));
                 }
             }
         });

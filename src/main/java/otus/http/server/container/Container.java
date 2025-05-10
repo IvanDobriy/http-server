@@ -2,6 +2,7 @@ package otus.http.server.container;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import otus.http.server.file.War;
 
 import javax.servlet.http.HttpServlet;
 import java.io.IOException;
@@ -13,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Container {
     private final Logger logger = LogManager.getLogger(this.getClass().getName());
     private final FileListener fileListener;
-    private final ConcurrentHashMap<Path, HttpServlet> servlets;
+    private final ConcurrentHashMap<Path, ServletLoader> servlets;
 
     public Container() {
         final var path = Paths.get("./containers");
@@ -27,9 +28,9 @@ public class Container {
         servlets = new ConcurrentHashMap<>();
         fileListener = new FileListener(path);
         fileListener.setOnCreate((into) -> {
-            if(Files.isRegularFile(into) && into.endsWith(".war")){
-                logger.info("Tar war with name: {}", into);
-
+            if(into.toString().endsWith(".war")){
+                logger.info("Extract war with name: {}", into);
+                War.extract(into.toAbsolutePath(), path.resolve(into.getFileName().toString().split("\\.")[0]));
                 return;
             }
             if(servlets.contains(into)){
@@ -38,7 +39,7 @@ public class Container {
             }
             final var servletLoader = new ServletLoader(into);
             final var httpServlet = servletLoader.load();
-            servlets.put(path, httpServlet);
+            servlets.put(path, servletLoader);
             logger.info("on create {}", into);
         });
         fileListener.setOnDelete((into) -> {
@@ -46,7 +47,7 @@ public class Container {
                return;
             }
             //todo stop servlet
-            final var httpServlet = servlets.remove(into);
+//            final var httpServlet = servlets.remove(into);
             logger.info("on delete {}", into);
         });
     }
