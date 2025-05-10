@@ -20,7 +20,7 @@ public class Container {
                 throw new RuntimeException(e);
             }
         }
-        fileListener = new FileListener(Paths.get("./containers"));
+        fileListener = new FileListener(path);
         fileListener.setOnCreate((into) -> {
             logger.info("on create {}", into);
         });
