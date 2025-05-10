@@ -23,8 +23,16 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:$JUNIT_VERSION")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$JUNIT_VERSION")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$JUNIT_VERSION")
+    testImplementation("org.mockito:mockito-core:5.17.0")
 }
 
 application {
     mainClass.set("otus.http.server.Application")
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
 }
