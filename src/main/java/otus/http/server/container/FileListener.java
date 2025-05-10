@@ -63,7 +63,7 @@ public class FileListener {
                         }
                     }
                     key.reset();
-                } catch (InterruptedException e) {
+                } catch (Exception e) {
                     logger.warn("unhandled exception: {}, stacktrace: {}", e.getMessage(), Arrays.asList(e.getStackTrace()));
                 }
             }
