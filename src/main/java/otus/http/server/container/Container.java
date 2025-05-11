@@ -44,7 +44,7 @@ public class Container {
     }
 
     private void loadServlet(Path path) {
-        if (servlets.contains(path)) {
+        if (servlets.containsKey(path)) {
             logger.info("current servlet {} exists", path);
             return;
         }
