@@ -76,8 +76,7 @@ public class Container {
         });
     }
 
-    public void run() {
-        //TODO create servlets from all wars
+    private void loadServletsOnStart() {
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path)) {
             Path extractedPath;
             for (Path path : directoryStream) {
@@ -88,6 +87,10 @@ public class Container {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void run() {
+        loadServletsOnStart();
         fileListener.run();
     }
 
