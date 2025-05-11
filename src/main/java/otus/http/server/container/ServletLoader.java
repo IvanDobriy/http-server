@@ -5,12 +5,16 @@ import java.nio.file.Path;
 
 public class ServletLoader {
     private final Path path;
+    private HttpServlet servlet;
 
     public ServletLoader(Path path){
         this.path = path;
     }
 
     public HttpServlet load(){
-        return null;
+        if(servlet == null){
+            //todo load servlet
+        }
+        return servlet;
     }
 }

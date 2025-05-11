@@ -21,7 +21,6 @@ public class FileListener {
         void execute(Path path);
     }
 
-
     private final Logger logger = LogManager.getLogger(this.getClass().getName());
     private final ExecutorService executorService;
     private final WatchService watchService;
