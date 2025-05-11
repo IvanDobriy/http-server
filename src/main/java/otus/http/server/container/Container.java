@@ -44,6 +44,10 @@ public class Container {
     }
 
     private void loadServlet(Path path) {
+        if (servlets.contains(path)) {
+            logger.info("current servlet {} exists", path);
+            return;
+        }
         final var servletLoader = new ServletLoader(path);
         final var httpServlet = servletLoader.load();
         servlets.put(path, servletLoader);
@@ -57,10 +61,6 @@ public class Container {
         fileListener = new FileListener(path);
         fileListener.setOnCreate((into) -> {
             if (extractWar(into) != null) {
-                return;
-            }
-            if (servlets.contains(into)) {
-                logger.info("current servlet {} exists", into);
                 return;
             }
             loadServlet(into);
@@ -82,6 +82,8 @@ public class Container {
             for (Path path : directoryStream) {
                 if ((extractedPath = extractWar(path)) != null) {
                     loadServlet(extractedPath);
+                } else {
+                    loadServlet(path);
                 }
             }
         } catch (IOException e) {
