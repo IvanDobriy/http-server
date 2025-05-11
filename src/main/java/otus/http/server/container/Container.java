@@ -51,7 +51,7 @@ public class Container {
         final var servletLoader = new ServletLoader(path);
         final var httpServlet = servletLoader.load();
         servlets.put(path, servletLoader);
-        logger.info("on create {}", path);
+        logger.info("servlet is loaded by path: {}", path);
     }
 
     public Container() {
