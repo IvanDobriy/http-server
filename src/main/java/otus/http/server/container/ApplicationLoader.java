@@ -2,34 +2,25 @@ package otus.http.server.container;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import otus.http.server.container.configuration.ServletConfig;
-import otus.http.server.container.configuration.WebXml;
+import otus.http.server.container.configuration.ApplicationConfig;
 
-import javax.servlet.http.HttpServlet;
 import java.nio.file.Path;
 
 public class ApplicationLoader {
     private final Logger logger = LogManager.getLogger(this.getClass().getName());
     private final Path path;
-    private HttpServlet servlet;
+    private Application application;
 
-    public ApplicationLoader(Path path){
+    public ApplicationLoader(Path path) {
         this.path = path;
     }
 
-
-
-    public HttpServlet load(){
-        if(servlet == null){
+    public Application load() {
+        if (application == null) {
             //todo load servlet
-            final var webXml = new WebXml(path.resolve("./WEB-INF/web.xml"));
-            final var map  = webXml.getServletConfigMap();
-            for(ServletConfig config: map.values()){
-
-            }
-
-            logger.info("map: {}", map);
+            final var applicatonConfig = new ApplicationConfig(path);
+            application = new Application(applicatonConfig);
         }
-        return servlet;
+        return application;
     }
 }
