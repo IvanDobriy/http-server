@@ -26,4 +26,8 @@ public class ApplicationConfig {
     public Path getClassesPath() {
         return classesPath;
     }
+
+    public Path getLibPath() {
+        return libPath;
+    }
 }

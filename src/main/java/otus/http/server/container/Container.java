@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Container {
     private final Logger logger = LogManager.getLogger(this.getClass().getName());
     private final FileListener fileListener;
-    private final ConcurrentHashMap<Path, ApplicationLoader> servlets;
+    private final ConcurrentHashMap<Path, Application> applications;
     private final Path path;
 
     private void checkPath() {
@@ -28,6 +28,7 @@ public class Container {
     }
 
     private Path extractWar(Path path) {
+        //todo need to use path matcher
         if (!Files.isDirectory(path) && path.toString().endsWith(".war")) {
             logger.info("Extract war with name: {}", path);
             String fileName = path.getFileName().toString().split("\\.")[0];
@@ -44,20 +45,21 @@ public class Container {
     }
 
     private void loadServlet(Path path) {
-        if (servlets.containsKey(path)) {
+        if (applications.containsKey(path)) {
             logger.info("current servlet {} exists", path);
             return;
         }
         final var applicationLoader = new ApplicationLoader(path);
-        final var httpServlet = applicationLoader.load();
-        servlets.put(path, applicationLoader);
+        final var application = applicationLoader.load();
+        application.init();
+        applications.put(path, application);
         logger.info("servlet is loaded by path: {}", path);
     }
 
     public Container() {
         this.path = Paths.get("./containers");
         checkPath();
-        servlets = new ConcurrentHashMap<>();
+        applications = new ConcurrentHashMap<>();
         fileListener = new FileListener(path);
         fileListener.setOnCreate((into) -> {
             if (extractWar(into) != null) {
@@ -67,7 +69,7 @@ public class Container {
         });
 
         fileListener.setOnDelete((into) -> {
-            if (!servlets.contains(into)) {
+            if (!applications.contains(into)) {
                 return;
             }
             //todo stop servlet

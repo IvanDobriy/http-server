@@ -4,14 +4,23 @@ import otus.http.server.container.configuration.ApplicationConfig;
 import otus.http.server.container.configuration.ServletConfig;
 
 import javax.servlet.http.HttpServlet;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.PathMatcher;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Application {
     private final URLClassLoader classLoader;
     private final ApplicationConfig config;
     private final List<HttpServlet> httpServlets;
+    private final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:*.jar");
 
     public Application(ApplicationConfig config) {
         Objects.requireNonNull(config);
@@ -45,8 +54,16 @@ public class Application {
     }
 
     private List<URL> getJarsURL() {
-        final var urlList = new ArrayList<URL>();
-
-        return urlList;
+        try {
+            return Files.list(config.getLibPath()).filter(pathMatcher::matches).map((path) -> {
+                try {
+                    return path.toUri().toURL();
+                } catch (MalformedURLException e) {
+                    throw new RuntimeException(e);
+                }
+            }).collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
