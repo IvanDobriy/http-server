@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Container {
     private final Logger logger = LogManager.getLogger(this.getClass().getName());
     private final FileListener fileListener;
-    private final ConcurrentHashMap<Path, ServletLoader> servlets;
+    private final ConcurrentHashMap<Path, ApplicationLoader> servlets;
     private final Path path;
 
     private void checkPath() {
@@ -48,9 +48,9 @@ public class Container {
             logger.info("current servlet {} exists", path);
             return;
         }
-        final var servletLoader = new ServletLoader(path);
-        final var httpServlet = servletLoader.load();
-        servlets.put(path, servletLoader);
+        final var applicationLoader = new ApplicationLoader(path);
+        final var httpServlet = applicationLoader.load();
+        servlets.put(path, applicationLoader);
         logger.info("servlet is loaded by path: {}", path);
     }
 
