@@ -31,6 +31,7 @@ public class Application {
             final var parentClassLoader = Thread.currentThread().getContextClassLoader();
             final List<URL> urlList = new ArrayList<>(getJarsURL());
             urlList.add(config.getClassesPath().toUri().toURL());
+            //todo добавить проверку на существование jar(библиотеки) или классика в родителе
             classLoader = new URLClassLoader(urlList.toArray(new URL[0]), parentClassLoader);
             Class<?> servletClass;
             for (ServletConfig servletConfig : servletMap.values()) {
