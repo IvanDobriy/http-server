@@ -5,10 +5,7 @@ import org.apache.logging.log4j.Logger;
 import otus.http.server.file.War;
 
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Container {
@@ -16,6 +13,9 @@ public class Container {
     private final FileListener fileListener;
     private final ConcurrentHashMap<Path, Application> applications;
     private final Path path;
+
+    private final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:*.war");
+
 
     private void checkPath() {
         if (!Files.exists(path)) {
@@ -28,8 +28,7 @@ public class Container {
     }
 
     private Path extractWar(Path path) {
-        //todo need to use path matcher
-        if (!Files.isDirectory(path) && path.toString().endsWith(".war")) {
+        if (!Files.isDirectory(path) && pathMatcher.matches(path.getFileName())) {
             logger.info("Extract war with name: {}", path);
             String fileName = path.getFileName().toString().split("\\.")[0];
             Path extractTo;
