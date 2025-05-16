@@ -55,6 +55,9 @@ public class Application {
 
     private List<URL> getJarsURL() {
         try {
+            if(!Files.exists(config.getLibPath())){
+                return List.of();
+            }
             return Files.list(config.getLibPath()).filter(pathMatcher::matches).map((path) -> {
                 try {
                     return path.toUri().toURL();
