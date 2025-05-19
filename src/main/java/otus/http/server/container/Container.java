@@ -2,10 +2,12 @@ package otus.http.server.container;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import otus.http.server.Dispatcher;
 import otus.http.server.file.War;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Container {
@@ -13,6 +15,7 @@ public class Container {
     private final FileListener fileListener;
     private final ConcurrentHashMap<Path, Application> applications;
     private final Path path;
+    private final Dispatcher dispatcher;
 
     private final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:*.war");
 
@@ -52,10 +55,13 @@ public class Container {
         final var application = applicationLoader.load();
         application.init();
         applications.put(path, application);
+        dispatcher.addApplication(application);
         logger.info("servlet is loaded by path: {}", path);
     }
 
-    public Container() {
+    public Container(Dispatcher dispatcher) {
+        Objects.requireNonNull(dispatcher);
+        this.dispatcher = dispatcher;
         this.path = Paths.get("./containers");
         checkPath();
         applications = new ConcurrentHashMap<>();

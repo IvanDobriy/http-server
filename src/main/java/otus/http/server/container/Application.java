@@ -72,4 +72,12 @@ public class Application {
             throw new RuntimeException(e);
         }
     }
+
+    public ApplicationConfig getConfig() {
+        return config;
+    }
+
+    public List<HttpServlet> getHttpServlets() {
+        return httpServlets;
+    }
 }
