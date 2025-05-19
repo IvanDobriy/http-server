@@ -189,27 +189,27 @@ public class HttpRequest implements HttpServletRequest {
 
     @Override
     public long getDateHeader(String name) {
-        return 0;
+        return Long.parseLong(headers.get(name));
     }
 
     @Override
     public String getHeader(String name) {
-        return "";
+        return headers.get(name);
     }
 
     @Override
     public Enumeration<String> getHeaders(String name) {
-        return null;
+        return Collections.enumeration(headers.values());
     }
 
     @Override
     public Enumeration<String> getHeaderNames() {
-        return null;
+        return Collections.enumeration(headers.keySet());
     }
 
     @Override
     public int getIntHeader(String name) {
-        return 0;
+        return Integer.parseInt(headers.get(name));
     }
 
     @Override
