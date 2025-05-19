@@ -41,7 +41,7 @@ public class HttpRequest implements HttpServletRequest {
             requestUri = parseUriAndParameters();
             headers = parseHeaders();
 
-            logger.info("method: {}, requestUri: {}, parameters: {}", method, requestUri, parameters);
+            logger.info("method: {}, requestUri: {}, parameters: {}, headers: {}", method, requestUri, parameters, headers);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -53,20 +53,29 @@ public class HttpRequest implements HttpServletRequest {
         int symbol;
         StringBuilder keyName = new StringBuilder();
         StringBuilder value = new StringBuilder();
+        StringBuilder bodyStartSequence = new StringBuilder();
         while ((symbol = reader.read()) != -1) {
             if ((char) symbol == ' ') {
                 continue;
             }
             if ((char) symbol == '\r') {
+                bodyStartSequence.append((char)symbol);
                 continue;
             }
             if ((char) symbol == '\n') {
+                bodyStartSequence.append((char)symbol);
+                if(bodyStartSequence.length() >= 4){
+                    if(bodyStartSequence.toString().equals("\r\n\r\n")){
+                        break;
+                    }
+                }
                 addHeader(keyName, value, result);
                 headerState = HeaderParserStates.PARSE_KEY;
                 keyName = new StringBuilder();
                 value = new StringBuilder();
                 continue;
             }
+            bodyStartSequence = new StringBuilder();
             if ((char) symbol == ':') {
                 headerState = HeaderParserStates.PARSE_VALUE;
                 continue;
