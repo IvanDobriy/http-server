@@ -9,6 +9,7 @@ import java.io.*;
 import java.net.Socket;
 import java.security.Principal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class HttpRequest implements HttpServletRequest {
     private Logger logger = LogManager.getLogger(this.getClass().getName());
@@ -18,7 +19,7 @@ public class HttpRequest implements HttpServletRequest {
     private final String method;
     private final String requestUri;
 
-    private Map<String, String> parameters;
+    private Map<String, String[]> parameters;
 
     private enum ParameterParserStates{
         PARSE_KEY,
@@ -69,9 +70,23 @@ public class HttpRequest implements HttpServletRequest {
         }
         return builder.toString();
     }
+    private void addParameter(StringBuilder keyName, StringBuilder value, Map<String, String[]> result){
+        if(keyName.length() != 0){
+            final var name = keyName.toString();
+            if(result.containsKey(name)){
+                final var values =  result.get(name);
+                final var newArray = Arrays.copyOf(values, values.length + 1);
+                newArray[newArray.length -1] = value.toString();
+                result.put(name, newArray);
+            }else {
+                result.put(name, new String[]{value.toString()});
+            }
+        }
+    }
 
-    private Map<String, String> parseParameters() throws IOException {
-        final var result = new HashMap<String, String>();
+
+    private Map<String, String[]> parseParameters() throws IOException {
+        final var result = new HashMap<String, String[]>();
         var parameterState = ParameterParserStates.PARSE_KEY;
         int symbol;
         StringBuilder keyName = new StringBuilder();
@@ -82,7 +97,7 @@ public class HttpRequest implements HttpServletRequest {
             }
             if((char)symbol == '&'){
                 if(keyName.length() != 0){
-                    result.put(keyName.toString(), value.toString());
+                    addParameter(keyName, value, result);
                 }
                 parameterState = ParameterParserStates.PARSE_KEY;
                 keyName = new StringBuilder();
@@ -101,9 +116,7 @@ public class HttpRequest implements HttpServletRequest {
                 value.append((char)symbol);
             }
         }
-        if(keyName.length() != 0){
-            result.put(keyName.toString(), value.toString());
-        }
+        addParameter(keyName, value, result);
         return result;
     }
 
@@ -144,7 +157,7 @@ public class HttpRequest implements HttpServletRequest {
 
     @Override
     public String getMethod() {
-        return "";
+        return method;
     }
 
     @Override
@@ -309,22 +322,22 @@ public class HttpRequest implements HttpServletRequest {
 
     @Override
     public String getParameter(String name) {
-        return "";
+        return parameters.get(name)[0];
     }
 
     @Override
     public Enumeration<String> getParameterNames() {
-        return null;
+        return Collections.enumeration(parameters.values().stream().map(arr-> arr[0]).collect(Collectors.toList()));
     }
 
     @Override
     public String[] getParameterValues(String name) {
-        return new String[0];
+        return parameters.get(name);
     }
 
     @Override
     public Map<String, String[]> getParameterMap() {
-        return Map.of();
+        return parameters;
     }
 
     @Override
