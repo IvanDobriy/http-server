@@ -16,6 +16,8 @@ public class HttpRequest implements HttpServletRequest {
     private InputStream inputStream;
     private InputStreamReader reader;
 
+    private HttpServletInputStream httpServletInputStream;
+
     private final String method;
     private final String requestUri;
 
@@ -40,7 +42,7 @@ public class HttpRequest implements HttpServletRequest {
             method = parseMethodName();
             requestUri = parseUriAndParameters();
             headers = parseHeaders();
-
+            httpServletInputStream = new HttpServletInputStream(inputStream);
             logger.info("method: {}, requestUri: {}, parameters: {}, headers: {}", method, requestUri, parameters, headers);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -374,7 +376,7 @@ public class HttpRequest implements HttpServletRequest {
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
-        return null;
+        return httpServletInputStream;
     }
 
     @Override
