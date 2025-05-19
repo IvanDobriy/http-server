@@ -18,13 +18,22 @@ public class HttpRequest implements HttpServletRequest {
     private final String method;
     private final String requestUri;
 
+    private Map<String, String> parameters;
+
+    private enum ParameterParserStates{
+        PARSE_KEY,
+        PARSE_VALUE
+    }
+
     public HttpRequest(Socket socket) {
         try {
             inputStream = socket.getInputStream();
             reader = new InputStreamReader(inputStream);
+            parameters = new HashMap<>();
             method = parseMethodName();
-            requestUri = parseUri();
-            logger.info("method: {}, requestUri: {}", method, requestUri);
+            requestUri = parseUriAndParameters();
+
+            logger.info("method: {}, requestUri: {}, parameters: {}", method, requestUri, parameters);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -46,8 +55,56 @@ public class HttpRequest implements HttpServletRequest {
         return parseBetweenSpaces();
     }
 
-    private String parseUri() throws IOException {
-        return parseBetweenSpaces();
+    private String parseUriAndParameters() throws IOException {
+        final var builder = new StringBuilder();
+        int symbol;
+        while ((symbol = reader.read()) != -1) {
+            if ((char) symbol == ' ' || (char) symbol == '?') {
+                break;
+            }
+            builder.append((char) symbol);
+        }
+        if (symbol == '?') {
+            parameters = parseParameters();
+        }
+        return builder.toString();
+    }
+
+    private Map<String, String> parseParameters() throws IOException {
+        final var result = new HashMap<String, String>();
+        var parameterState = ParameterParserStates.PARSE_KEY;
+        int symbol;
+        StringBuilder keyName = new StringBuilder();
+        StringBuilder value = new StringBuilder();
+        while ((symbol = reader.read()) != -1){
+            if((char)symbol == ' '){
+                break;
+            }
+            if((char)symbol == '&'){
+                if(keyName.length() != 0){
+                    result.put(keyName.toString(), value.toString());
+                }
+                parameterState = ParameterParserStates.PARSE_KEY;
+                keyName = new StringBuilder();
+                value = new StringBuilder();
+                continue;
+            }
+            if((char)symbol == '='){
+                parameterState = ParameterParserStates.PARSE_VALUE;
+                continue;
+            }
+            if(parameterState == ParameterParserStates.PARSE_KEY){
+                keyName.append((char) symbol);
+                continue;
+            }
+            if(parameterState == ParameterParserStates.PARSE_VALUE){
+                value.append((char)symbol);
+            }
+        }
+        if(keyName.length() != 0){
+            result.put(keyName.toString(), value.toString());
+        }
+        return result;
     }
 
     @Override
