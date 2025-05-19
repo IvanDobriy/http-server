@@ -37,6 +37,7 @@ public class WebXml {
                 servletConfig.setName(servletName);
                 servletConfig.setClassName(servletClass);
                 servletConfigMap.put(servletName, servletConfig);
+                servletConfigMap.put(servletConfig.getClassName(), servletConfig);
             }
             NodeList mappingNodes = root.getElementsByTagName("servlet-mapping");
             for (int i = 0; i < mappingNodes.getLength(); i++) {
