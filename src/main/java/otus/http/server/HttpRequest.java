@@ -20,6 +20,7 @@ public class HttpRequest implements HttpServletRequest {
     private final String requestUri;
 
     private Map<String, String[]> parameters;
+    private Map<String, String> headers;
 
     private enum ParameterParserStates {
         PARSE_KEY,
@@ -33,6 +34,7 @@ public class HttpRequest implements HttpServletRequest {
             parameters = new HashMap<>();
             method = parseMethodName();
             requestUri = parseUriAndParameters();
+            
 
             logger.info("method: {}, requestUri: {}, parameters: {}", method, requestUri, parameters);
         } catch (Exception e) {
