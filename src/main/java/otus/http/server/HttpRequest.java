@@ -27,6 +27,11 @@ public class HttpRequest implements HttpServletRequest {
         PARSE_VALUE
     }
 
+    private enum HeaderParserStates {
+        PARSE_KEY,
+        PARSE_VALUE
+    }
+
     public HttpRequest(Socket socket) {
         try {
             inputStream = socket.getInputStream();
@@ -34,12 +39,48 @@ public class HttpRequest implements HttpServletRequest {
             parameters = new HashMap<>();
             method = parseMethodName();
             requestUri = parseUriAndParameters();
-            
+            headers = parseHeaders();
 
             logger.info("method: {}, requestUri: {}, parameters: {}", method, requestUri, parameters);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private Map<String, String> parseHeaders() throws IOException {
+        final var result = new HashMap<String, String>();
+        var headerState = HeaderParserStates.PARSE_KEY;
+        int symbol;
+        StringBuilder keyName = new StringBuilder();
+        StringBuilder value = new StringBuilder();
+        while ((symbol = reader.read()) != -1) {
+            if ((char) symbol == ' ') {
+                continue;
+            }
+            if ((char) symbol == '\r') {
+                continue;
+            }
+            if ((char) symbol == '\n') {
+                addHeader(keyName, value, result);
+                headerState = HeaderParserStates.PARSE_KEY;
+                keyName = new StringBuilder();
+                value = new StringBuilder();
+                continue;
+            }
+            if ((char) symbol == ':') {
+                headerState = HeaderParserStates.PARSE_VALUE;
+                continue;
+            }
+            if (headerState == HeaderParserStates.PARSE_KEY) {
+                keyName.append((char) symbol);
+                continue;
+            }
+            if (headerState == HeaderParserStates.PARSE_VALUE) {
+                value.append((char) symbol);
+            }
+        }
+        addHeader(keyName, value, result);
+        return result;
     }
 
     private String parseBetweenSpaces() throws IOException {
@@ -87,6 +128,12 @@ public class HttpRequest implements HttpServletRequest {
         }
     }
 
+    private void addHeader(StringBuilder keyName, StringBuilder value, Map<String, String> result) {
+        if (keyName.length() != 0) {
+            final var name = keyName.toString();
+            result.put(name, value.toString());
+        }
+    }
 
     private Map<String, String[]> parseParameters() throws IOException {
         final var result = new HashMap<String, String[]>();
