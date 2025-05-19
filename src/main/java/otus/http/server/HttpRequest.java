@@ -21,7 +21,7 @@ public class HttpRequest implements HttpServletRequest {
 
     private Map<String, String[]> parameters;
 
-    private enum ParameterParserStates{
+    private enum ParameterParserStates {
         PARSE_KEY,
         PARSE_VALUE
     }
@@ -70,15 +70,16 @@ public class HttpRequest implements HttpServletRequest {
         }
         return builder.toString();
     }
-    private void addParameter(StringBuilder keyName, StringBuilder value, Map<String, String[]> result){
-        if(keyName.length() != 0){
+
+    private void addParameter(StringBuilder keyName, StringBuilder value, Map<String, String[]> result) {
+        if (keyName.length() != 0) {
             final var name = keyName.toString();
-            if(result.containsKey(name)){
-                final var values =  result.get(name);
+            if (result.containsKey(name)) {
+                final var values = result.get(name);
                 final var newArray = Arrays.copyOf(values, values.length + 1);
-                newArray[newArray.length -1] = value.toString();
+                newArray[newArray.length - 1] = value.toString();
                 result.put(name, newArray);
-            }else {
+            } else {
                 result.put(name, new String[]{value.toString()});
             }
         }
@@ -91,29 +92,27 @@ public class HttpRequest implements HttpServletRequest {
         int symbol;
         StringBuilder keyName = new StringBuilder();
         StringBuilder value = new StringBuilder();
-        while ((symbol = reader.read()) != -1){
-            if((char)symbol == ' '){
+        while ((symbol = reader.read()) != -1) {
+            if ((char) symbol == ' ') {
                 break;
             }
-            if((char)symbol == '&'){
-                if(keyName.length() != 0){
-                    addParameter(keyName, value, result);
-                }
+            if ((char) symbol == '&') {
+                addParameter(keyName, value, result);
                 parameterState = ParameterParserStates.PARSE_KEY;
                 keyName = new StringBuilder();
                 value = new StringBuilder();
                 continue;
             }
-            if((char)symbol == '='){
+            if ((char) symbol == '=') {
                 parameterState = ParameterParserStates.PARSE_VALUE;
                 continue;
             }
-            if(parameterState == ParameterParserStates.PARSE_KEY){
+            if (parameterState == ParameterParserStates.PARSE_KEY) {
                 keyName.append((char) symbol);
                 continue;
             }
-            if(parameterState == ParameterParserStates.PARSE_VALUE){
-                value.append((char)symbol);
+            if (parameterState == ParameterParserStates.PARSE_VALUE) {
+                value.append((char) symbol);
             }
         }
         addParameter(keyName, value, result);
@@ -327,7 +326,7 @@ public class HttpRequest implements HttpServletRequest {
 
     @Override
     public Enumeration<String> getParameterNames() {
-        return Collections.enumeration(parameters.values().stream().map(arr-> arr[0]).collect(Collectors.toList()));
+        return Collections.enumeration(parameters.values().stream().map(arr -> arr[0]).collect(Collectors.toList()));
     }
 
     @Override
