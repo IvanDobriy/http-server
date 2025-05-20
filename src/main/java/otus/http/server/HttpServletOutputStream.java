@@ -30,8 +30,16 @@ public class HttpServletOutputStream extends ServletOutputStream {
     public void write(int b) throws IOException {
         if (isFirstByte) {
             isFirstByte = false;
-
         }
         outputStream.write(b);
+    }
+
+    @Override
+    public void close() throws IOException {
+        if(isFirstByte){
+            isFirstByte = false;
+        }
+        super.close();
+        outputStream.close();
     }
 }
