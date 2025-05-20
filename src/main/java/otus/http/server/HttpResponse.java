@@ -7,21 +7,37 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 public class HttpResponse implements HttpServletResponse {
     private final OutputStream outputStream;
     private final HttpServletOutputStream httpServletOutputStream;
     private final PrintWriter printWriter;
+    private final Map<String, String> headerMap;
+    private int status;
+    private String statusMessage;
+    private String characterEncoding;
+    private long contentLength;
+    private String contentType;
+    private int bufferSize;
+    private Locale locale;
+
     public HttpResponse(Socket socket) {
         Objects.requireNonNull(socket);
         try {
+            status = 200;
+            statusMessage = "";
+            characterEncoding = StandardCharsets.UTF_8.name();
+            headerMap = new HashMap<>();
+            contentType = null;
+            bufferSize = 1024;
+            locale = Locale.getDefault();
+
+
             outputStream = socket.getOutputStream();
-            httpServletOutputStream = new HttpServletOutputStream(outputStream);
-            printWriter = new PrintWriter(outputStream);
+            httpServletOutputStream = new HttpServletOutputStream(outputStream, this);
+            printWriter = new PrintWriter(httpServletOutputStream);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -34,92 +50,101 @@ public class HttpResponse implements HttpServletResponse {
 
     @Override
     public boolean containsHeader(String name) {
-        return false;
+        return headerMap.containsKey(name);
     }
 
     @Override
     public String encodeURL(String url) {
+        //todo add url encoding
         return "";
     }
 
     @Override
     public String encodeRedirectURL(String url) {
+        //todo add redirect url encoding
         return "";
     }
 
     @Override
     public String encodeUrl(String url) {
+        //todo add url encoding
         return "";
     }
 
     @Override
     public String encodeRedirectUrl(String url) {
+        //todo add url redirect encoding
         return "";
     }
 
     @Override
     public void sendError(int sc, String msg) throws IOException {
-
+        status = sc;
+        statusMessage = statusMessage;
+        //todo send msg;
     }
 
     @Override
     public void sendError(int sc) throws IOException {
-
+        status = sc;
+        //todo send msg
     }
 
     @Override
     public void sendRedirect(String location) throws IOException {
-
+        status = 300;
+        //todo send redirect
     }
 
     @Override
     public void setDateHeader(String name, long date) {
-
+        headerMap.put(name, String.valueOf(date));
     }
 
     @Override
     public void addDateHeader(String name, long date) {
-
+        headerMap.put(name, String.valueOf(date));
     }
 
     @Override
     public void setHeader(String name, String value) {
-
+        headerMap.put(name, value);
     }
 
     @Override
     public void addHeader(String name, String value) {
-
+        headerMap.put(name, value);
     }
 
     @Override
     public void setIntHeader(String name, int value) {
-
+        headerMap.put(name, String.valueOf(value));
     }
 
     @Override
     public void addIntHeader(String name, int value) {
-
+        headerMap.put(name, String.valueOf(value));
     }
 
     @Override
     public void setStatus(int sc) {
-
+        status = sc;
     }
 
     @Override
     public void setStatus(int sc, String sm) {
-
+        status = sc;
+        statusMessage = sm;
     }
 
     @Override
     public int getStatus() {
-        return 0;
+        return status;
     }
 
     @Override
     public String getHeader(String name) {
-        return "";
+        return headerMap.get(name);
     }
 
     @Override
@@ -129,17 +154,17 @@ public class HttpResponse implements HttpServletResponse {
 
     @Override
     public Collection<String> getHeaderNames() {
-        return List.of();
+        return headerMap.values();
     }
 
     @Override
     public String getCharacterEncoding() {
-        return "";
+        return characterEncoding;
     }
 
     @Override
     public String getContentType() {
-        return "";
+        return contentType;
     }
 
     @Override
@@ -154,61 +179,62 @@ public class HttpResponse implements HttpServletResponse {
 
     @Override
     public void setCharacterEncoding(String charset) {
-
+        characterEncoding = charset;
     }
 
     @Override
     public void setContentLength(int len) {
-
+        contentLength = len;
     }
 
     @Override
     public void setContentLengthLong(long len) {
-
+        contentLength = len;
     }
 
     @Override
     public void setContentType(String type) {
-
+        contentType = type;
     }
 
     @Override
     public void setBufferSize(int size) {
-
+        bufferSize = bufferSize;
     }
 
     @Override
     public int getBufferSize() {
-        return 0;
+        return bufferSize;
     }
 
     @Override
     public void flushBuffer() throws IOException {
-
+        //todo add buffer flushing
     }
 
     @Override
     public void resetBuffer() {
-
+        //todo add buffer resetting
     }
 
     @Override
     public boolean isCommitted() {
+        //todo add is commited check
         return false;
     }
 
     @Override
     public void reset() {
-
+        //todo add reset
     }
 
     @Override
     public void setLocale(Locale loc) {
-
+        locale = loc;
     }
 
     @Override
     public Locale getLocale() {
-        return null;
+        return locale;
     }
 }

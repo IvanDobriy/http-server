@@ -9,7 +9,9 @@ import java.util.Objects;
 public class HttpServletOutputStream extends ServletOutputStream {
     private final OutputStream outputStream;
 
-    public HttpServletOutputStream(OutputStream outputStream){
+    private Boolean isFirstByte = true;
+
+    public HttpServletOutputStream(OutputStream outputStream, HttpResponse response) {
         Objects.requireNonNull(outputStream);
         this.outputStream = outputStream;
     }
@@ -26,6 +28,10 @@ public class HttpServletOutputStream extends ServletOutputStream {
 
     @Override
     public void write(int b) throws IOException {
+        if (isFirstByte) {
+            isFirstByte = false;
+
+        }
         outputStream.write(b);
     }
 }
