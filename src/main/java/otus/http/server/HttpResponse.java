@@ -4,15 +4,27 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class HttpResponse implements HttpServletResponse {
-    public HttpResponse(Socket socket){
-
+    private final OutputStream outputStream;
+    private final HttpServletOutputStream httpServletOutputStream;
+    private final PrintWriter printWriter;
+    public HttpResponse(Socket socket) {
+        Objects.requireNonNull(socket);
+        try {
+            outputStream = socket.getOutputStream();
+            httpServletOutputStream = new HttpServletOutputStream(outputStream);
+            printWriter = new PrintWriter(outputStream);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -132,12 +144,12 @@ public class HttpResponse implements HttpServletResponse {
 
     @Override
     public ServletOutputStream getOutputStream() throws IOException {
-        return null;
+        return httpServletOutputStream;
     }
 
     @Override
     public PrintWriter getWriter() throws IOException {
-        return null;
+        return printWriter;
     }
 
     @Override
