@@ -160,7 +160,7 @@ public class HttpResponse implements HttpServletResponse {
 
     @Override
     public Collection<String> getHeaderNames() {
-        return headerMap.values();
+        return headerMap.keySet();
     }
 
     @Override
