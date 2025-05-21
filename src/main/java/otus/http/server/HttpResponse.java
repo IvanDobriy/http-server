@@ -14,6 +14,9 @@ public class HttpResponse implements HttpServletResponse {
 
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String CONTENT_LENGTH = "Content-Length";
+    private static final String SET_COOKIE = "Set-Cookie";
+
+    private static final String COOKIE_TEMPLATE = "%s=%s;";
 
     private final OutputStream outputStream;
     private final HttpServletOutputStream httpServletOutputStream;
@@ -49,7 +52,12 @@ public class HttpResponse implements HttpServletResponse {
 
     @Override
     public void addCookie(Cookie cookie) {
-
+        if (!headerMap.containsKey(SET_COOKIE)) {
+            headerMap.put(SET_COOKIE, String.format(COOKIE_TEMPLATE, cookie.getName(), cookie.getValue()));
+        }
+        var rawCookie = headerMap.get(SET_COOKIE);
+        rawCookie += " " + String.format(COOKIE_TEMPLATE, cookie.getName(), cookie.getValue());
+        headerMap.put(SET_COOKIE, rawCookie);
     }
 
     @Override
