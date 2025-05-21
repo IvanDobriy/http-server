@@ -27,6 +27,8 @@ public class HttpServer {
                     final var httpRequest = new HttpRequest(socket);
                     final var httpResponse = new HttpResponse(socket);
                     dispatcher.dispatch(httpRequest, httpResponse);
+                }catch (Exception e){
+                    logger.error("Unhandled error: {}, stacktrace: {}", e.getMessage(), Arrays.asList(e.getStackTrace()));
                 }
             }
         } catch (Exception e) {

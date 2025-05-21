@@ -8,12 +8,14 @@ import java.util.Objects;
 
 public class HttpServletOutputStream extends ServletOutputStream {
     private final OutputStream outputStream;
-
+    private final HttpResponse response;
     private Boolean isFirstByte = true;
 
     public HttpServletOutputStream(OutputStream outputStream, HttpResponse response) {
         Objects.requireNonNull(outputStream);
+        Objects.requireNonNull(response);
         this.outputStream = outputStream;
+        this.response = response;
     }
 
     @Override
@@ -30,6 +32,8 @@ public class HttpServletOutputStream extends ServletOutputStream {
     public void write(int b) throws IOException {
         if (isFirstByte) {
             isFirstByte = false;
+            final var cap = response.getHttpCap().build().toByteArray();
+            outputStream.write(cap);
         }
         outputStream.write(b);
     }
@@ -38,6 +42,8 @@ public class HttpServletOutputStream extends ServletOutputStream {
     public void close() throws IOException {
         if(isFirstByte){
             isFirstByte = false;
+            final var cap = response.getHttpCap().build().toByteArray();
+            outputStream.write(cap);
         }
         super.close();
         outputStream.close();

@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class HttpResponse implements HttpServletResponse {
+
     private final OutputStream outputStream;
     private final HttpServletOutputStream httpServletOutputStream;
     private final PrintWriter printWriter;
@@ -22,6 +23,7 @@ public class HttpResponse implements HttpServletResponse {
     private String contentType;
     private int bufferSize;
     private Locale locale;
+    private final HttpCap httpCap;
 
     public HttpResponse(Socket socket) {
         Objects.requireNonNull(socket);
@@ -33,7 +35,7 @@ public class HttpResponse implements HttpServletResponse {
             contentType = null;
             bufferSize = 1024;
             locale = Locale.getDefault();
-
+            httpCap = new HttpCap(this);
 
             outputStream = socket.getOutputStream();
             httpServletOutputStream = new HttpServletOutputStream(outputStream, this);
@@ -137,6 +139,10 @@ public class HttpResponse implements HttpServletResponse {
         statusMessage = sm;
     }
 
+    public String getStatusMessage() {
+        return statusMessage;
+    }
+
     @Override
     public int getStatus() {
         return status;
@@ -236,5 +242,9 @@ public class HttpResponse implements HttpServletResponse {
     @Override
     public Locale getLocale() {
         return locale;
+    }
+
+    public HttpCap getHttpCap() {
+        return httpCap;
     }
 }
