@@ -12,6 +12,9 @@ import java.util.*;
 
 public class HttpResponse implements HttpServletResponse {
 
+    private static final String CONTENT_TYPE = "Content-Type";
+    private static final String CONTENT_LENGTH = "Content-Length";
+
     private final OutputStream outputStream;
     private final HttpServletOutputStream httpServletOutputStream;
     private final PrintWriter printWriter;
@@ -19,7 +22,6 @@ public class HttpResponse implements HttpServletResponse {
     private int status;
     private String statusMessage;
     private String characterEncoding;
-    private long contentLength;
     private String contentType;
     private int bufferSize;
     private Locale locale;
@@ -82,20 +84,20 @@ public class HttpResponse implements HttpServletResponse {
     @Override
     public void sendError(int sc, String msg) throws IOException {
         status = sc;
-        statusMessage = statusMessage;
-        //todo send msg;
+        statusMessage = msg;
+        httpServletOutputStream.close();
     }
 
     @Override
     public void sendError(int sc) throws IOException {
         status = sc;
-        //todo send msg
+        httpServletOutputStream.close();
     }
 
     @Override
     public void sendRedirect(String location) throws IOException {
         status = 300;
-        //todo send redirect
+        httpServletOutputStream.close();
     }
 
     @Override
@@ -170,7 +172,7 @@ public class HttpResponse implements HttpServletResponse {
 
     @Override
     public String getContentType() {
-        return contentType;
+        return headerMap.get(CONTENT_TYPE);
     }
 
     @Override
@@ -190,17 +192,17 @@ public class HttpResponse implements HttpServletResponse {
 
     @Override
     public void setContentLength(int len) {
-        contentLength = len;
+        headerMap.put(CONTENT_LENGTH, String.valueOf(len));
     }
 
     @Override
     public void setContentLengthLong(long len) {
-        contentLength = len;
+        headerMap.put(CONTENT_LENGTH, String.valueOf(len));
     }
 
     @Override
     public void setContentType(String type) {
-        contentType = type;
+        headerMap.put(CONTENT_TYPE, type);
     }
 
     @Override
