@@ -104,7 +104,7 @@ public class HttpResponse implements HttpServletResponse {
 
     @Override
     public void sendRedirect(String location) throws IOException {
-        status = 300;
+        status = SC_MOVED_PERMANENTLY;
         httpServletOutputStream.close();
     }
 
