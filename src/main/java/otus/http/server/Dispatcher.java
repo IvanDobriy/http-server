@@ -17,6 +17,7 @@ public class Dispatcher {
     public void addApplication(Application application) {
         Objects.requireNonNull(application);
         final var servlets = application.getHttpServlets();
+        final var contextPath = application.getConfig().getContextPath();
         final var servletConfigMap = application.getConfig().getServletConfigMap();
         final var newServletsMap = new HashMap<>(this.servletsMap);
         String servletName;
@@ -25,7 +26,7 @@ public class Dispatcher {
             if (servletConfigMap.containsKey(servletName)) {
                 final var servletConfig = servletConfigMap.get(servletName);
                 for (String urlPattern : servletConfig.getUrlPatterns()) {
-                    newServletsMap.put(urlPattern, servlet);
+                    newServletsMap.put(contextPath + urlPattern, servlet);
                 }
             }
         }
