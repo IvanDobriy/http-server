@@ -9,13 +9,53 @@ import java.util.logging.Logger;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ContextXmlTests {
-    private final Logger logger = Logger.getLogger(this.getClass().getName());
+    private static String contextPathPrefix = "/otus/http/server/container/configuration";
 
     @Test
     void positiveTest() {
-        final var contextFilePath = Paths.get(getClass().getResource("/otus/http/server/container/configuration/context.xml").getPath());
+        final var contextFilePath = Paths.get(getClass().getResource(contextPathPrefix + "/context.xml").getPath());
         final var contextXMl = new ContextXml(contextFilePath);
         final var contextPath = contextXMl.getContextPath();
         Assertions.assertEquals("/test", contextPath);
+    }
+
+    @Test
+    void pathWithoutSlashInFrontOfUri() {
+        final var contextFilePath = Paths.get(getClass().getResource(contextPathPrefix + "/contextPathWithoutBackSlashInFrontOfUrl.xml").getPath());
+        final var contextXMl = new ContextXml(contextFilePath);
+        final var contextPath = contextXMl.getContextPath();
+        Assertions.assertEquals("/test", contextPath);
+    }
+
+    @Test
+    void pathIsBlank() {
+        final var contextFilePath = Paths.get(getClass().getResource(contextPathPrefix + "/contextPathIsBlank.xml").getPath());
+        final var contextXMl = new ContextXml(contextFilePath);
+        final var contextPath = contextXMl.getContextPath();
+        Assertions.assertEquals("", contextPath);
+    }
+
+    @Test
+    void pathNotFound() {
+        final var contextFilePath = Paths.get(getClass().getResource(contextPathPrefix + "/contextPathNotFound.xml").getPath());
+        final var contextXMl = new ContextXml(contextFilePath);
+        final var contextPath = contextXMl.getContextPath();
+        Assertions.assertEquals("", contextPath);
+    }
+
+    @Test
+    void pathEndsWithSlash() {
+        final var contextFilePath = Paths.get(getClass().getResource(contextPathPrefix + "/contextPathEndsWithSlash.xml").getPath());
+        final var contextXMl = new ContextXml(contextFilePath);
+        final var contextPath = contextXMl.getContextPath();
+        Assertions.assertEquals("/test", contextPath);
+    }
+
+    @Test
+    void unsupportedPath() {
+        final var contextFilePath = Paths.get(getClass().getResource(contextPathPrefix + "/unsupportedPath.xml").getPath());
+        Assertions.assertThrows(Exception.class, () -> {
+            new ContextXml(contextFilePath);
+        });
     }
 }

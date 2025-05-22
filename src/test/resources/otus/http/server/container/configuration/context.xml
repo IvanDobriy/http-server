@@ -1,3 +1,2 @@
 <Context path="/test" reloadable="true">
-    <Resource driverClassName="org.postgresql.Driver" name="processing-data" password="transcard" type="javax.sql.DataSource" url="jdbc:postgresql://localhost:54321/transcard" username="transcard"/>
 </Context>
