@@ -6,8 +6,6 @@ import org.junit.jupiter.api.TestInstance;
 
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class WebXmlTests {
@@ -25,6 +23,7 @@ public class WebXmlTests {
         final var configMap = webXML.getServletConfigMap();
         Assertions.assertEquals(2, configMap.size());
         final var configByClassKey = configMap.get("com.example.MainServlet");
+
         Assertions.assertEquals(expectedConfig.getClassName(), configByClassKey.getClassName());
         Assertions.assertEquals(expectedConfig.getName(), configByClassKey.getName());
         Assertions.assertEquals(expectedConfig.getUrlPatterns(), configByClassKey.getUrlPatterns());
@@ -34,8 +33,12 @@ public class WebXmlTests {
 
     @Test
     void urlIsBlank() {
-        final var webXmlFilePath = Paths.get(getClass().getResource(contextPathPrefix + "/web.xml").getPath());
-
+        final var expectedUrlPatterns = List.of("", "");
+        final var webXmlFilePath = Paths.get(getClass().getResource(contextPathPrefix + "/webUrlIsBlank.xml").getPath());
+        final var webXML = new WebXml(webXmlFilePath);
+        final var configMap = webXML.getServletConfigMap();
+        final var config = configMap.get("MainServlet");
+        Assertions.assertEquals(expectedUrlPatterns, config.getUrlPatterns());
     }
 
 

@@ -7,6 +7,8 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -41,9 +43,12 @@ public class WebXml {
             }
             NodeList mappingNodes = root.getElementsByTagName("servlet-mapping");
             for (int i = 0; i < mappingNodes.getLength(); i++) {
+                List<String> urlPatterns = new ArrayList<>();
                 Element mappingElement = (Element) mappingNodes.item(i);
                 String servletName = getChildTextContent(mappingElement,  "servlet-name");
-                List<String> urlPatterns = getChildTextContentList(mappingElement,  "url-pattern");
+                for(String url: getChildTextContentList(mappingElement,  "url-pattern")){
+                    urlPatterns.add(getCheckedPath(url));
+                }
                 if (!servletConfigMap.containsKey(servletName)) {
                     continue;
                 }
@@ -74,5 +79,23 @@ public class WebXml {
             contents.add(nodes.item(i).getTextContent().trim());
         }
         return contents;
+    }
+
+    private String getCheckedPath(String path) throws URISyntaxException {
+        Objects.requireNonNull(path);
+        if (path.isBlank()) {
+            return "";
+        }
+        if(path.length() == 1 && path.startsWith("/")){
+            return "";
+        }
+        new URI(path);
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+        if (path.startsWith("/")) {
+            return path;
+        }
+        return "/" + path;
     }
 }
