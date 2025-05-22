@@ -30,17 +30,17 @@ public class ContextXmlTests {
     @Test
     void pathIsBlank() {
         final var contextFilePath = Paths.get(getClass().getResource(contextPathPrefix + "/contextPathIsBlank.xml").getPath());
-        final var contextXMl = new ContextXml(contextFilePath);
-        final var contextPath = contextXMl.getContextPath();
-        Assertions.assertEquals("", contextPath);
+        Assertions.assertThrows(Exception.class, () -> {
+            new ContextXml(contextFilePath);
+        });
     }
 
     @Test
     void pathNotFound() {
         final var contextFilePath = Paths.get(getClass().getResource(contextPathPrefix + "/contextPathNotFound.xml").getPath());
-        final var contextXMl = new ContextXml(contextFilePath);
-        final var contextPath = contextXMl.getContextPath();
-        Assertions.assertEquals("", contextPath);
+        Assertions.assertThrows(Exception.class, () -> {
+            new ContextXml(contextFilePath);
+        });
     }
 
     @Test

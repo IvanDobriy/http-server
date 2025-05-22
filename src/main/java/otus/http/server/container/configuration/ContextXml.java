@@ -36,7 +36,7 @@ public class ContextXml {
     private String getCheckedPath(String path) throws URISyntaxException {
         Objects.requireNonNull(path);
         if (path.isBlank()) {
-            return "";
+            throw new RuntimeException("context path is blank");
         }
         new URI(path);
         if (path.endsWith("/")) {
