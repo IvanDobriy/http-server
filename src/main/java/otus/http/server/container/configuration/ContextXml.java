@@ -27,7 +27,7 @@ public class ContextXml {
             if (!root.getNodeName().equals("Context")) {
                 throw new RuntimeException("Expected 'Context' as root element");
             }
-            contextPath = getCheckedPath(root.getAttribute("path"));
+            contextPath = getCheckedPath(root.getAttribute("path").trim());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -37,6 +37,9 @@ public class ContextXml {
         Objects.requireNonNull(path);
         if (path.isBlank()) {
             throw new RuntimeException("context path is blank");
+        }
+        if(path.length() == 1 && path.startsWith("/")){
+            throw new RuntimeException(String.format("unsupported context path: %s", path));
         }
         new URI(path);
         if (path.endsWith("/")) {
