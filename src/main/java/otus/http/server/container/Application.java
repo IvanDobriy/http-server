@@ -1,7 +1,7 @@
 package otus.http.server.container;
 
 import otus.http.server.container.configuration.ApplicationConfig;
-import otus.http.server.container.configuration.ServletConfig;
+import otus.http.server.container.configuration.ApplicationServletConfig;
 
 import javax.servlet.http.HttpServlet;
 import java.io.IOException;
@@ -34,9 +34,11 @@ public class Application {
             //todo добавить проверку на существование jar(библиотеки) или классика в родителе
             classLoader = new URLClassLoader(urlList.toArray(new URL[0]), parentClassLoader);
             Class<?> servletClass;
-            for (ServletConfig servletConfig : servletMap.values()) {
+            HttpServlet servlet;
+            for (ApplicationServletConfig servletConfig : servletMap.values()) {
                 servletClass = classLoader.loadClass(servletConfig.getClassName());
-                httpServlets.add((HttpServlet) servletClass.getDeclaredConstructor().newInstance());
+                servlet = (HttpServlet) servletClass.getDeclaredConstructor().newInstance();
+                httpServlets.add(servlet);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

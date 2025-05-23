@@ -4,7 +4,7 @@ import java.nio.file.Path;
 import java.util.Map;
 
 public class ApplicationConfig {
-    private final Map<String, ServletConfig> servletConfigMap;
+    private final Map<String, ApplicationServletConfig> servletConfigMap;
     private final Path webXmlPath;
     private final Path contextXmlPath;
     private final Path libPath;
@@ -24,7 +24,7 @@ public class ApplicationConfig {
         contextPath = contextXml.getContextPath();
     }
 
-    public Map<String, ServletConfig> getServletConfigMap() {
+    public Map<String, ApplicationServletConfig> getServletConfigMap() {
         return servletConfigMap;
     }
 

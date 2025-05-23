@@ -2,7 +2,7 @@ package otus.http.server.container.configuration;
 
 import java.util.List;
 
-public class ServletConfig {
+public class ApplicationServletConfig {
     private String name;
     private String className;
     private List<String> urlPatterns;

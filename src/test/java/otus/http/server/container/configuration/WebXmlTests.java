@@ -13,7 +13,7 @@ public class WebXmlTests {
 
     @Test
     void positiveTest() {
-        final var expectedConfig = new ServletConfig();
+        final var expectedConfig = new ApplicationServletConfig();
         expectedConfig.setUrlPatterns(List.of("/hello", "/world"));
         expectedConfig.setClassName("com.example.MainServlet");
         expectedConfig.setName("MainServlet");

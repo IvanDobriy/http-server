@@ -14,7 +14,7 @@ import java.util.*;
 
 public class WebXml {
     private final Path path;
-    private final Map<String, ServletConfig> servletConfigMap;
+    private final Map<String, ApplicationServletConfig> servletConfigMap;
 
     public WebXml(Path path) {
         Objects.requireNonNull(path);
@@ -38,7 +38,7 @@ public class WebXml {
                 if (servletConfigMap.containsKey(servletName)) {
                     throw new RuntimeException("Found servlet with same name into web.xml");
                 }
-                final var servletConfig = new ServletConfig();
+                final var servletConfig = new ApplicationServletConfig();
                 servletConfig.setName(servletName);
                 servletConfig.setClassName(servletClass);
                 servletConfigMap.put(servletName, servletConfig);
@@ -63,7 +63,7 @@ public class WebXml {
         }
     }
 
-    public Map<String, ServletConfig> getServletConfigMap() {
+    public Map<String, ApplicationServletConfig> getServletConfigMap() {
         return servletConfigMap;
     }
 
