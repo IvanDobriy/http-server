@@ -2,6 +2,7 @@ package otus.http.server;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import otus.http.server.container.configuration.ApplicationConfig;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -23,6 +24,8 @@ public class HttpRequest implements HttpServletRequest {
 
     private Map<String, String[]> parameters;
     private Map<String, String> headers;
+
+    private ApplicationConfig applicationConfig;
 
     private enum ParameterParserStates {
         PARSE_KEY,
@@ -522,5 +525,14 @@ public class HttpRequest implements HttpServletRequest {
     @Override
     public DispatcherType getDispatcherType() {
         return null;
+    }
+
+    public ApplicationConfig getApplicationConfig() {
+        return applicationConfig;
+    }
+
+    public void setApplicationConfig(ApplicationConfig applicationConfig) {
+        Objects.requireNonNull(applicationConfig);
+        this.applicationConfig = applicationConfig;
     }
 }
