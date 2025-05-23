@@ -27,6 +27,9 @@ public class WebXml {
             doc.getDocumentElement().normalize();
 
             Element root = doc.getDocumentElement();
+            if(!root.getNodeName().equals("web-app")){
+                throw new RuntimeException("Expected `web-app` as root node into web.xml file");
+            }
             NodeList servletNodes = root.getElementsByTagName("servlet");
             for (int i = 0; i < servletNodes.getLength(); i++) {
                 Element servletElement = (Element) servletNodes.item(i);

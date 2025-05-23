@@ -41,5 +41,21 @@ public class WebXmlTests {
         Assertions.assertEquals(expectedUrlPatterns, config.getUrlPatterns());
     }
 
+    @Test
+    void urlsNotFound(){
+        final var expectedUrlPatterns = List.of();
+        final var webXmlFilePath = Paths.get(getClass().getResource(contextPathPrefix + "/webUrlIsNotFound.xml").getPath());
+        final var webXML = new WebXml(webXmlFilePath);
+        final var configMap = webXML.getServletConfigMap();
+        final var config = configMap.get("MainServlet");
+        Assertions.assertEquals(expectedUrlPatterns, config.getUrlPatterns());
+    }
 
+    @Test
+    void webAppNodeNotFound() {
+        final var webXmlFilePath = Paths.get(getClass().getResource(contextPathPrefix + "/webWebAppNodeNotFound.xml").getPath());
+        Assertions.assertThrows(Exception.class, ()->{
+            new WebXml(webXmlFilePath);
+        });
+    }
 }
