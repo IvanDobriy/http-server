@@ -5,12 +5,12 @@
                       http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
     <servlet>
-        <servlet-name>MainServlet</servlet-name>
-        <servlet-class>com.example.MainServlet</servlet-class>
+        <servlet-name>  MainServlet  </servlet-name>
+        <servlet-class>  com.example.MainServlet  </servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>MainServlet</servlet-name>
-        <url-pattern>/hello</url-pattern>
-        <url-pattern>/world</url-pattern>
+        <servlet-name>  MainServlet </servlet-name>
+        <url-pattern> /hello  </url-pattern>
+        <url-pattern> /world  </url-pattern>
     </servlet-mapping>
 </web-app>
