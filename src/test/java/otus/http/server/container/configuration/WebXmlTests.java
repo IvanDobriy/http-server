@@ -58,4 +58,12 @@ public class WebXmlTests {
             new WebXml(webXmlFilePath);
         });
     }
+
+    @Test
+    void unsupportedUrl(){
+        final var webXmlFilePath = Paths.get(getClass().getResource(contextPathPrefix + "/webUnsupportedUrl.xml").getPath());
+        Assertions.assertThrows(Exception.class, ()->{
+            new WebXml(webXmlFilePath);
+        });
+    }
 }
