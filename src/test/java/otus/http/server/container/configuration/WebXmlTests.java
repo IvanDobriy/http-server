@@ -6,6 +6,7 @@ import org.junit.jupiter.api.TestInstance;
 
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class WebXmlTests {
@@ -17,6 +18,7 @@ public class WebXmlTests {
         expectedConfig.setUrlPatterns(List.of("/hello", "/world"));
         expectedConfig.setClassName("com.example.MainServlet");
         expectedConfig.setName("MainServlet");
+        expectedConfig.setInitParameters(Map.of("value1", "1", "value2", "2"));
 
         final var webXmlFilePath = Paths.get(getClass().getResource(contextPathPrefix + "/web.xml").getPath());
         final var webXML = new WebXml(webXmlFilePath);
@@ -27,8 +29,10 @@ public class WebXmlTests {
         Assertions.assertEquals(expectedConfig.getClassName(), configByClassKey.getClassName());
         Assertions.assertEquals(expectedConfig.getName(), configByClassKey.getName());
         Assertions.assertEquals(expectedConfig.getUrlPatterns(), configByClassKey.getUrlPatterns());
+        Assertions.assertEquals(expectedConfig.getInitParameters(), configByClassKey.getInitParameters());
         final var configByNameKey = configMap.get("MainServlet");
         Assertions.assertEquals(configByClassKey, configByNameKey);
+        Assertions.assertEquals(expectedConfig.getInitParameters(), configByNameKey.getInitParameters());
     }
 
     @Test

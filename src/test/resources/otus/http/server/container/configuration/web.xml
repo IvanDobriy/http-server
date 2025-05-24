@@ -7,6 +7,14 @@
     <servlet>
         <servlet-name>  MainServlet  </servlet-name>
         <servlet-class>  com.example.MainServlet  </servlet-class>
+        <init-param>
+            <param-name>value1</param-name>
+            <param-value>1</param-value>
+        </init-param>
+        <init-param>
+            <param-name>value2</param-name>
+            <param-value>2</param-value>
+        </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>  MainServlet </servlet-name>

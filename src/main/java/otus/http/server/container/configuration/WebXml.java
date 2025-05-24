@@ -31,16 +31,27 @@ public class WebXml {
                 throw new RuntimeException("Expected `web-app` as root node into web.xml file");
             }
             NodeList servletNodes = root.getElementsByTagName("servlet");
+            Map<String, String> initParameters;
             for (int i = 0; i < servletNodes.getLength(); i++) {
                 Element servletElement = (Element) servletNodes.item(i);
-                String servletName = getChildTextContent(servletElement,  "servlet-name");
-                String servletClass = getChildTextContent(servletElement, "servlet-class");
+                String servletName = getChildTextContent(servletElement,  "servlet-name").trim();
+                String servletClass = getChildTextContent(servletElement, "servlet-class").trim();
+                initParameters = new HashMap<>();
+                NodeList initParamNodes = servletElement.getElementsByTagName("init-param");
+                for(int j = 0; j < initParamNodes.getLength(); j++){
+                    Element initParmaNode = (Element) initParamNodes.item(j);
+                    String paramName = getChildTextContent(initParmaNode, "param-name").trim();
+                    String paramValue = getChildTextContent(initParmaNode, "param-value").trim();
+                    initParameters.put(paramName, paramValue);
+                }
                 if (servletConfigMap.containsKey(servletName)) {
                     throw new RuntimeException("Found servlet with same name into web.xml");
                 }
                 final var servletConfig = new ApplicationServletConfig();
                 servletConfig.setName(servletName);
                 servletConfig.setClassName(servletClass);
+                servletConfig.setInitParameters(initParameters);
+
                 servletConfigMap.put(servletName, servletConfig);
                 servletConfigMap.put(servletConfig.getClassName(), servletConfig);
             }

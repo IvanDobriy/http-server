@@ -1,11 +1,14 @@
 package otus.http.server.container.configuration;
 
 import java.util.List;
+import java.util.Map;
 
 public class ApplicationServletConfig {
     private String name;
     private String className;
     private List<String> urlPatterns;
+    private Map<String, String> initParameters;
+
 
     public String getName() {
         return name;
@@ -29,6 +32,14 @@ public class ApplicationServletConfig {
 
     public void setUrlPatterns(List<String> urlPatterns) {
         this.urlPatterns = urlPatterns;
+    }
+
+    public Map<String, String> getInitParameters() {
+        return initParameters;
+    }
+
+    public void setInitParameters(Map<String, String> initParameters) {
+        this.initParameters = initParameters;
     }
 
     @Override
