@@ -7,10 +7,14 @@ import java.util.Objects;
 
 public class HttpServletConfig implements ServletConfig {
     private final ApplicationServletConfig applicationServletConfig;
+    private final HttpServletConfig servletConfig;
+    private final HttpServletContext servletContext;
 
     public HttpServletConfig(ApplicationServletConfig applicationServletConfig) {
         Objects.requireNonNull(applicationServletConfig);
         this.applicationServletConfig = applicationServletConfig;
+        this.servletConfig = new HttpServletConfig(applicationServletConfig);
+        this.servletContext = new HttpServletContext(applicationServletConfig);
     }
 
     @Override
@@ -20,16 +24,16 @@ public class HttpServletConfig implements ServletConfig {
 
     @Override
     public ServletContext getServletContext() {
-        return null;
+        return servletContext;
     }
 
     @Override
     public String getInitParameter(String name) {
-        return "";
+        return servletConfig.getInitParameter(name);
     }
 
     @Override
     public Enumeration<String> getInitParameterNames() {
-        return null;
+        return servletConfig.getInitParameterNames();
     }
 }

@@ -5,12 +5,16 @@ import javax.servlet.descriptor.JspConfigDescriptor;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Enumeration;
-import java.util.EventListener;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class HttpServletContext implements ServletContext {
+    private final ApplicationServletConfig applicationServletConfig;
+
+    public HttpServletContext(ApplicationServletConfig config) {
+        Objects.requireNonNull(config);
+        applicationServletConfig = config;
+    }
+
     @Override
     public String getContextPath() {
         return "";
