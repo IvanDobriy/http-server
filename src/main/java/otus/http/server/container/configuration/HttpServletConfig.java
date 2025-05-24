@@ -2,18 +2,17 @@ package otus.http.server.container.configuration;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Objects;
 
 public class HttpServletConfig implements ServletConfig {
     private final ApplicationServletConfig applicationServletConfig;
-    private final HttpServletConfig servletConfig;
     private final HttpServletContext servletContext;
 
     public HttpServletConfig(ApplicationServletConfig applicationServletConfig) {
         Objects.requireNonNull(applicationServletConfig);
         this.applicationServletConfig = applicationServletConfig;
-        this.servletConfig = new HttpServletConfig(applicationServletConfig);
         this.servletContext = new HttpServletContext(applicationServletConfig);
     }
 
@@ -29,11 +28,11 @@ public class HttpServletConfig implements ServletConfig {
 
     @Override
     public String getInitParameter(String name) {
-        return servletConfig.getInitParameter(name);
+        return applicationServletConfig.getInitParameters().get(name);
     }
 
     @Override
     public Enumeration<String> getInitParameterNames() {
-        return servletConfig.getInitParameterNames();
+        return Collections.enumeration(applicationServletConfig.getInitParameters().keySet());
     }
 }

@@ -2,6 +2,7 @@ package otus.http.server.container;
 
 import otus.http.server.container.configuration.ApplicationConfig;
 import otus.http.server.container.configuration.ApplicationServletConfig;
+import otus.http.server.container.configuration.HttpServletConfig;
 
 import javax.servlet.http.HttpServlet;
 import java.io.IOException;
@@ -49,7 +50,7 @@ public class Application {
     public void init() {
         for (HttpServlet httpServlet : httpServlets) {
             try {
-                httpServlet.init();
+                httpServlet.init(new HttpServletConfig(getConfig().getServletConfigMap().get(httpServlet.getClass().getName())));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

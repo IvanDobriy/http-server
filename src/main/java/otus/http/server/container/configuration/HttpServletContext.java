@@ -117,12 +117,12 @@ public class HttpServletContext implements ServletContext {
 
     @Override
     public String getInitParameter(String name) {
-        return "";
+        return applicationServletConfig.getContextParameters().get(name);
     }
 
     @Override
     public Enumeration<String> getInitParameterNames() {
-        return null;
+        return Collections.enumeration(applicationServletConfig.getContextParameters().keySet());
     }
 
     @Override
