@@ -10,6 +10,7 @@ public class HttpServletOutputStream extends ServletOutputStream {
     private final OutputStream outputStream;
     private final HttpResponse response;
     private Boolean isFirstByte = true;
+    private WriteListener writeListener;
 
     public HttpServletOutputStream(OutputStream outputStream, HttpResponse response) {
         Objects.requireNonNull(outputStream);
@@ -25,7 +26,7 @@ public class HttpServletOutputStream extends ServletOutputStream {
 
     @Override
     public void setWriteListener(WriteListener writeListener) {
-
+        this.writeListener = writeListener;
     }
 
     @Override
@@ -40,7 +41,7 @@ public class HttpServletOutputStream extends ServletOutputStream {
 
     @Override
     public void close() throws IOException {
-        if(isFirstByte){
+        if (isFirstByte) {
             isFirstByte = false;
             final var cap = response.getHttpCap().build().toByteArray();
             outputStream.write(cap);

@@ -8,6 +8,7 @@ import java.util.Objects;
 
 public class HttpServletInputStream extends ServletInputStream {
     private final InputStream inputStream;
+    private ReadListener readListener;
     public HttpServletInputStream(InputStream inputStream){
         Objects.requireNonNull(inputStream);
         this.inputStream = inputStream;
@@ -25,7 +26,9 @@ public class HttpServletInputStream extends ServletInputStream {
 
     @Override
     public void setReadListener(ReadListener readListener) {
-
+        Objects.requireNonNull(readListener);
+        this.readListener = readListener;
+        //todo добавить вызов executor с проверкой isReady
     }
 
     @Override

@@ -44,7 +44,6 @@ public class Application {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
 
     public void init() {
