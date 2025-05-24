@@ -9,6 +9,8 @@ public class ApplicationServletConfig {
     private List<String> urlPatterns;
     private Map<String, String> initParameters;
 
+    private Map<String, String> contextParameters;
+
 
     public String getName() {
         return name;
@@ -40,6 +42,14 @@ public class ApplicationServletConfig {
 
     public void setInitParameters(Map<String, String> initParameters) {
         this.initParameters = initParameters;
+    }
+
+    public Map<String, String> getContextParameters() {
+        return contextParameters;
+    }
+
+    public void setContextParameters(Map<String, String> contextParameters) {
+        this.contextParameters = contextParameters;
     }
 
     @Override

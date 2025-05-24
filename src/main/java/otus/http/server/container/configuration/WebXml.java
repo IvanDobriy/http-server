@@ -20,6 +20,7 @@ public class WebXml {
         Objects.requireNonNull(path);
         this.path = path;
         servletConfigMap = new HashMap<>();
+        Map<String, String> contextParamsMap = new HashMap<>();
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newDefaultInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -27,18 +28,27 @@ public class WebXml {
             doc.getDocumentElement().normalize();
 
             Element root = doc.getDocumentElement();
-            if(!root.getNodeName().equals("web-app")){
+            if (!root.getNodeName().equals("web-app")) {
                 throw new RuntimeException("Expected `web-app` as root node into web.xml file");
             }
+
+            NodeList contextParameters = root.getElementsByTagName("context-param");
+            for (int i = 0; i < contextParameters.getLength(); i++) {
+                Element element = (Element) contextParameters.item(i);
+                String paramName = getChildTextContent(element, "param-name").trim();
+                String paramValue = getChildTextContent(element, "param-value").trim();
+                contextParamsMap.put(paramName, paramValue);
+            }
+
             NodeList servletNodes = root.getElementsByTagName("servlet");
             Map<String, String> initParameters;
             for (int i = 0; i < servletNodes.getLength(); i++) {
                 Element servletElement = (Element) servletNodes.item(i);
-                String servletName = getChildTextContent(servletElement,  "servlet-name").trim();
+                String servletName = getChildTextContent(servletElement, "servlet-name").trim();
                 String servletClass = getChildTextContent(servletElement, "servlet-class").trim();
                 initParameters = new HashMap<>();
                 NodeList initParamNodes = servletElement.getElementsByTagName("init-param");
-                for(int j = 0; j < initParamNodes.getLength(); j++){
+                for (int j = 0; j < initParamNodes.getLength(); j++) {
                     Element initParmaNode = (Element) initParamNodes.item(j);
                     String paramName = getChildTextContent(initParmaNode, "param-name").trim();
                     String paramValue = getChildTextContent(initParmaNode, "param-value").trim();
@@ -51,6 +61,7 @@ public class WebXml {
                 servletConfig.setName(servletName);
                 servletConfig.setClassName(servletClass);
                 servletConfig.setInitParameters(initParameters);
+                servletConfig.setContextParameters(contextParamsMap);
 
                 servletConfigMap.put(servletName, servletConfig);
                 servletConfigMap.put(servletConfig.getClassName(), servletConfig);
@@ -59,8 +70,8 @@ public class WebXml {
             for (int i = 0; i < mappingNodes.getLength(); i++) {
                 List<String> urlPatterns = new ArrayList<>();
                 Element mappingElement = (Element) mappingNodes.item(i);
-                String servletName = getChildTextContent(mappingElement,  "servlet-name");
-                for(String url: getChildTextContentList(mappingElement,  "url-pattern")){
+                String servletName = getChildTextContent(mappingElement, "servlet-name");
+                for (String url : getChildTextContentList(mappingElement, "url-pattern")) {
                     urlPatterns.add(getCheckedPath(url));
                 }
                 if (!servletConfigMap.containsKey(servletName)) {
@@ -100,7 +111,7 @@ public class WebXml {
         if (path.isBlank()) {
             return "";
         }
-        if(path.length() == 1 && path.startsWith("/")){
+        if (path.length() == 1 && path.startsWith("/")) {
             return "";
         }
         new URI(path);

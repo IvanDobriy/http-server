@@ -19,6 +19,8 @@ public class WebXmlTests {
         expectedConfig.setClassName("com.example.MainServlet");
         expectedConfig.setName("MainServlet");
         expectedConfig.setInitParameters(Map.of("value1", "1", "value2", "2"));
+        expectedConfig.setContextParameters(Map.of("param1", "p1", "param2", "p2"));
+
 
         final var webXmlFilePath = Paths.get(getClass().getResource(contextPathPrefix + "/web.xml").getPath());
         final var webXML = new WebXml(webXmlFilePath);
@@ -30,9 +32,11 @@ public class WebXmlTests {
         Assertions.assertEquals(expectedConfig.getName(), configByClassKey.getName());
         Assertions.assertEquals(expectedConfig.getUrlPatterns(), configByClassKey.getUrlPatterns());
         Assertions.assertEquals(expectedConfig.getInitParameters(), configByClassKey.getInitParameters());
+        Assertions.assertEquals(expectedConfig.getContextParameters(), configByClassKey.getContextParameters());
         final var configByNameKey = configMap.get("MainServlet");
         Assertions.assertEquals(configByClassKey, configByNameKey);
         Assertions.assertEquals(expectedConfig.getInitParameters(), configByNameKey.getInitParameters());
+        Assertions.assertEquals(expectedConfig.getContextParameters(), configByNameKey.getContextParameters());
     }
 
     @Test

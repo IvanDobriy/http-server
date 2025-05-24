@@ -4,9 +4,17 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
                       http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
+    <context-param>
+        <param-name>param1</param-name>
+        <param-value>p1</param-value>
+    </context-param>
+    <context-param>
+        <param-name>param2</param-name>
+        <param-value>p2</param-value>
+    </context-param>
     <servlet>
-        <servlet-name>  MainServlet  </servlet-name>
-        <servlet-class>  com.example.MainServlet  </servlet-class>
+        <servlet-name>MainServlet</servlet-name>
+        <servlet-class>com.example.MainServlet</servlet-class>
         <init-param>
             <param-name>value1</param-name>
             <param-value>1</param-value>
@@ -17,8 +25,8 @@
         </init-param>
     </servlet>
     <servlet-mapping>
-        <servlet-name>  MainServlet </servlet-name>
-        <url-pattern> /hello  </url-pattern>
-        <url-pattern> /world  </url-pattern>
+        <servlet-name>MainServlet</servlet-name>
+        <url-pattern>/hello</url-pattern>
+        <url-pattern>/world</url-pattern>
     </servlet-mapping>
 </web-app>
