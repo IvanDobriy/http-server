@@ -25,8 +25,6 @@ public class HttpRequest implements HttpServletRequest {
     private Map<String, String[]> parameters;
     private Map<String, String> headers;
 
-    private ApplicationConfig applicationConfig;
-
     private enum ParameterParserStates {
         PARSE_KEY,
         PARSE_VALUE
@@ -64,13 +62,13 @@ public class HttpRequest implements HttpServletRequest {
                 continue;
             }
             if ((char) symbol == '\r') {
-                bodyStartSequence.append((char)symbol);
+                bodyStartSequence.append((char) symbol);
                 continue;
             }
             if ((char) symbol == '\n') {
-                bodyStartSequence.append((char)symbol);
-                if(bodyStartSequence.length() >= 4){
-                    if(bodyStartSequence.toString().equals("\r\n\r\n")){
+                bodyStartSequence.append((char) symbol);
+                if (bodyStartSequence.length() >= 4) {
+                    if (bodyStartSequence.toString().equals("\r\n\r\n")) {
                         break;
                     }
                 }
@@ -525,14 +523,5 @@ public class HttpRequest implements HttpServletRequest {
     @Override
     public DispatcherType getDispatcherType() {
         return null;
-    }
-
-    public ApplicationConfig getApplicationConfig() {
-        return applicationConfig;
-    }
-
-    public void setApplicationConfig(ApplicationConfig applicationConfig) {
-        Objects.requireNonNull(applicationConfig);
-        this.applicationConfig = applicationConfig;
     }
 }
