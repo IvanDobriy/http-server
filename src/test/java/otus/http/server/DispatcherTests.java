@@ -118,7 +118,7 @@ public class DispatcherTests {
         final var testData = prepareTestData();
 
         final var petRequest = Mockito.mock(HttpRequest.class);
-        Mockito.when(petRequest.getRequestURI()).thenReturn("/data/element/*");
+        Mockito.when(petRequest.getRequestURI()).thenReturn("/data/element/1");
         final var petResponse = Mockito.mock(HttpResponse.class);
         testData.dispatcher.dispatch(petRequest, petResponse);
 
