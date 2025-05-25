@@ -74,4 +74,12 @@ public class WebXmlTests {
             new WebXml(webXmlFilePath);
         });
     }
+
+    @Test
+    void unsupportedWildcard(){
+        final var webXmlFilePath = Paths.get(getClass().getResource(contextPathPrefix + "/webUnsupportedUrlPattern.xml").getPath());
+        Assertions.assertThrows(Exception.class, ()->{
+            new WebXml(webXmlFilePath);
+        });
+    }
 }

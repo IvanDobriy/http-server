@@ -114,6 +114,10 @@ public class WebXml {
         if (path.length() == 1 && path.startsWith("/")) {
             return "";
         }
+        final var wildcardCounter = path.chars().filter((ch) -> ch == '*').count();
+        if (wildcardCounter > 1) {
+            throw new RuntimeException(String.format("unsupported url-pattern: %s", path));
+        }
         new URI(path);
         if (path.endsWith("/")) {
             path = path.substring(0, path.length() - 1);
