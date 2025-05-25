@@ -41,6 +41,9 @@ public class ContextXml {
         if(path.length() == 1 && path.startsWith("/")){
             throw new RuntimeException(String.format("unsupported context path: %s", path));
         }
+        if(path.contains("*")){
+            throw new RuntimeException(String.format("unsupported context path: %s", path));
+        }
         new URI(path);
         if (path.endsWith("/")) {
             path = path.substring(0, path.length() - 1);

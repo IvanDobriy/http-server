@@ -58,6 +58,14 @@ public class ContextXmlTests {
             new ContextXml(contextFilePath);
         });
     }
+
+    @Test
+    void unsupportedWildcardPath(){
+        final var contextFilePath = Paths.get(getClass().getResource(contextPathPrefix + "/contextWithWildcard.xml").getPath());
+        Assertions.assertThrows(Exception.class, () -> {
+            new ContextXml(contextFilePath);
+        });
+    }
     @Test
     void contextPathContainsOnlySlash() {
         final var contextFilePath = Paths.get(getClass().getResource(contextPathPrefix + "/contextContainsOnlySlash.xml").getPath());
