@@ -23,6 +23,10 @@ public class DispatcherTests {
     private class HttpServlet2 extends HttpServlet {
     }
 
+    private class HttpServlet3 extends HttpServlet {
+
+    }
+
     private class TestData {
         private final Dispatcher dispatcher;
         private final Map<String, HttpServlet> servletMap;
@@ -50,26 +54,33 @@ public class DispatcherTests {
         Mockito.when(petServletConfig.getUrlPatterns()).thenReturn(List.of("/pet"));
         final var carServletConfig = Mockito.mock(ApplicationServletConfig.class);
         Mockito.when(carServletConfig.getUrlPatterns()).thenReturn(List.of("/car"));
-        final var wildcardServletConfig = Mockito.mock(ApplicationServletConfig.class);
-        Mockito.when(wildcardServletConfig.getUrlPatterns()).thenReturn(List.of("/element/*"));
+        final var elementServletConfig = Mockito.mock(ApplicationServletConfig.class);
+        Mockito.when(elementServletConfig.getUrlPatterns()).thenReturn(List.of("/element/*"));
 
         final var applicationConfig = Mockito.mock(ApplicationConfig.class);
         final var application = Mockito.mock(Application.class);
         final var petServlet = Mockito.mock(HttpServlet1.class);
         final var carServlet = Mockito.mock(HttpServlet2.class);
+        final var elementServlet = Mockito.mock(HttpServlet3.class);
+
         Mockito.doNothing().when(petServlet).service(Mockito.<HttpRequest>any(), Mockito.<HttpResponse>any());
+        Mockito.doNothing().when(carServlet).service(Mockito.<HttpRequest>any(), Mockito.<HttpResponse>any());
+        Mockito.doNothing().when(elementServlet).service(Mockito.<HttpRequest>any(), Mockito.<HttpResponse>any());
+
         Mockito.when(application.getConfig()).thenReturn(applicationConfig);
-        Mockito.when(application.getHttpServlets()).thenReturn(List.of(petServlet, carServlet));
+        Mockito.when(application.getHttpServlets()).thenReturn(List.of(petServlet, carServlet, elementServlet));
         Mockito.when(applicationConfig.getContextPath()).thenReturn("/data");
         Mockito.when(applicationConfig
                         .getServletConfigMap())
                 .thenReturn(
                         Map.of(
                                 petServlet.getClass().getName(), petServletConfig,
-                                carServlet.getClass().getName(), carServletConfig
+                                carServlet.getClass().getName(), carServletConfig,
+                                elementServlet.getClass().getName(), elementServletConfig
                         ));
-        servletMap.put("car", carServlet);
-        servletMap.put("pet", petServlet);
+        servletMap.put("/data/car", carServlet);
+        servletMap.put("/data/pet", petServlet);
+        servletMap.put("/data/element", elementServlet);
         final var dispatcher = new Dispatcher();
         dispatcher.addApplication(application);
         return new TestData(dispatcher, servletMap);
@@ -83,10 +94,9 @@ public class DispatcherTests {
         Mockito.when(petRequest.getRequestURI()).thenReturn("/data/pet");
         final var petResponse = Mockito.mock(HttpResponse.class);
         testData.dispatcher.dispatch(petRequest, petResponse);
-
-        Mockito.verify(testData.getServletMap().get("pet")).service(petRequest, petResponse);
-        Mockito.verify(testData.getServletMap().get("car"), Mockito.never()).service(petRequest, petResponse);
-
+        Mockito.verify(testData.getServletMap().get("/data/pet")).service(petRequest, petResponse);
+        Mockito.verify(testData.getServletMap().get("/data/car"), Mockito.never()).service(petRequest, petResponse);
+        Mockito.verify(testData.getServletMap().get("/data/element"), Mockito.never()).service(petRequest, petResponse);
     }
 
     @Test
@@ -98,8 +108,22 @@ public class DispatcherTests {
         final var petResponse = Mockito.mock(HttpResponse.class);
         testData.dispatcher.dispatch(petRequest, petResponse);
 
-        Mockito.verify(testData.getServletMap().get("car")).service(petRequest, petResponse);
-        Mockito.verify(testData.getServletMap().get("pet"), Mockito.never()).service(petRequest, petResponse);
+        Mockito.verify(testData.getServletMap().get("/data/car")).service(petRequest, petResponse);
+        Mockito.verify(testData.getServletMap().get("/data/pet"), Mockito.never()).service(petRequest, petResponse);
+        Mockito.verify(testData.getServletMap().get("/data/element"), Mockito.never()).service(petRequest, petResponse);
+    }
 
+    @Test
+    void wildcardRequest() throws ServletException, IOException {
+        final var testData = prepareTestData();
+
+        final var petRequest = Mockito.mock(HttpRequest.class);
+        Mockito.when(petRequest.getRequestURI()).thenReturn("/data/element/*");
+        final var petResponse = Mockito.mock(HttpResponse.class);
+        testData.dispatcher.dispatch(petRequest, petResponse);
+
+        Mockito.verify(testData.getServletMap().get("/data/element")).service(petRequest, petResponse);
+        Mockito.verify(testData.getServletMap().get("/data/pet"), Mockito.never()).service(petRequest, petResponse);
+        Mockito.verify(testData.getServletMap().get("/data/car"), Mockito.never()).service(petRequest, petResponse);
     }
 }
