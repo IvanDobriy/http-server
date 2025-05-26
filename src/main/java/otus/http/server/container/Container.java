@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Container {
+    private final String HTTP_SERVER_CONTAINER_PATH_PROPERTY_NAME = "http_server_container_path";
     private final Logger logger = LogManager.getLogger(this.getClass().getName());
     private final FileListener fileListener;
     private final ConcurrentHashMap<Path, Application> applications;
@@ -62,7 +63,16 @@ public class Container {
     public Container(Dispatcher dispatcher) {
         Objects.requireNonNull(dispatcher);
         this.dispatcher = dispatcher;
-        this.path = Paths.get("./containers");
+
+        Path rootPath;
+        String containerPath = System.getenv(HTTP_SERVER_CONTAINER_PATH_PROPERTY_NAME);
+        logger.info("container path: {}", containerPath);
+        if (containerPath == null) {
+            rootPath = Paths.get("./");
+        } else {
+            rootPath = Paths.get(containerPath);
+        }
+        this.path = rootPath.resolve(Paths.get("./containers")).normalize().toAbsolutePath();
         checkPath();
         applications = new ConcurrentHashMap<>();
         fileListener = new FileListener(path);
