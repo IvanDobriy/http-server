@@ -34,10 +34,10 @@ public class HttpServer {
                 try {
                     socket.close();
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    logger.error("Unhandled error: {}, stacktrace: {}", e.getMessage(), Arrays.asList(e.getStackTrace()));
                 }
             }
-            e.printStackTrace();
+            logger.error("Unhandled error: {}, stacktrace: {}", e.getMessage(), Arrays.asList(e.getStackTrace()));
         }
         return socket;
     }
