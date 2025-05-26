@@ -51,15 +51,4 @@ public class ApplicationServletConfig {
     public void setContextParameters(Map<String, String> contextParameters) {
         this.contextParameters = contextParameters;
     }
-
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("{")
-                .append("name: ").append(name)
-                .append(", className: ").append(className)
-                .append(", urlPatterns: ").append(urlPatterns)
-                .append("}");
-        return builder.toString();
-    }
 }
