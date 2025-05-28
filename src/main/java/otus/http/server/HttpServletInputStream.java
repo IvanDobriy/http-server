@@ -21,11 +21,7 @@ public class HttpServletInputStream extends ServletInputStream {
 
     @Override
     public boolean isReady() {
-        try {
-            return inputStream.available() > 0;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return false;
     }
 
     @Override
@@ -37,6 +33,9 @@ public class HttpServletInputStream extends ServletInputStream {
 
     @Override
     public int read() throws IOException {
-        return inputStream.read();
+        if(inputStream.available() > 0){
+            return  inputStream.read();
+        }
+        return -1;
     }
 }

@@ -2,11 +2,13 @@ package otus.http.server;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import otus.http.server.container.configuration.ApplicationConfig;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.security.Principal;
 import java.util.*;
@@ -14,8 +16,8 @@ import java.util.stream.Collectors;
 
 public class HttpRequest implements HttpServletRequest {
     private Logger logger = LogManager.getLogger(this.getClass().getName());
+
     private InputStream inputStream;
-    private InputStreamReader reader;
 
     private HttpServletInputStream httpServletInputStream;
 
@@ -24,6 +26,8 @@ public class HttpRequest implements HttpServletRequest {
 
     private Map<String, String[]> parameters;
     private Map<String, String> headers;
+
+    private int contentLength = 0;
 
     private enum ParameterParserStates {
         PARSE_KEY,
@@ -38,12 +42,14 @@ public class HttpRequest implements HttpServletRequest {
     public HttpRequest(Socket socket) {
         try {
             inputStream = socket.getInputStream();
-            reader = new InputStreamReader(inputStream);
+            httpServletInputStream = new HttpServletInputStream(inputStream);
             parameters = new HashMap<>();
             method = parseMethodName();
             requestUri = parseUriAndParameters();
             headers = parseHeaders();
-            httpServletInputStream = new HttpServletInputStream(inputStream);
+
+            contentLength = Integer.parseInt(headers.getOrDefault("content-length", "0"));
+
             logger.info("method: {}, requestUri: {}, parameters: {}, headers: {}", method, requestUri, parameters, headers);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -57,7 +63,7 @@ public class HttpRequest implements HttpServletRequest {
         StringBuilder keyName = new StringBuilder();
         StringBuilder value = new StringBuilder();
         StringBuilder bodyStartSequence = new StringBuilder();
-        while ((symbol = reader.read()) != -1) {
+        while ((symbol = httpServletInputStream.read()) != -1) {
             if ((char) symbol == ' ') {
                 continue;
             }
@@ -98,7 +104,7 @@ public class HttpRequest implements HttpServletRequest {
     private String parseBetweenSpaces() throws IOException {
         final var builder = new StringBuilder();
         int symbol;
-        while ((symbol = reader.read()) != -1) {
+        while ((symbol = httpServletInputStream.read()) != -1) {
             if ((char) symbol == ' ') {
                 break;
             }
@@ -114,7 +120,7 @@ public class HttpRequest implements HttpServletRequest {
     private String parseUriAndParameters() throws IOException {
         final var builder = new StringBuilder();
         int symbol;
-        while ((symbol = reader.read()) != -1) {
+        while ((symbol = httpServletInputStream.read()) != -1) {
             if ((char) symbol == ' ' || (char) symbol == '?') {
                 break;
             }
@@ -128,7 +134,7 @@ public class HttpRequest implements HttpServletRequest {
 
     private void addParameter(StringBuilder keyName, StringBuilder value, Map<String, String[]> result) {
         if (keyName.length() != 0) {
-            final var name = keyName.toString();
+            final var name = keyName.toString().toLowerCase();
             if (result.containsKey(name)) {
                 final var values = result.get(name);
                 final var newArray = Arrays.copyOf(values, values.length + 1);
@@ -142,7 +148,7 @@ public class HttpRequest implements HttpServletRequest {
 
     private void addHeader(StringBuilder keyName, StringBuilder value, Map<String, String> result) {
         if (keyName.length() != 0) {
-            final var name = keyName.toString();
+            final var name = keyName.toString().toLowerCase();
             result.put(name, value.toString());
         }
     }
@@ -153,7 +159,7 @@ public class HttpRequest implements HttpServletRequest {
         int symbol;
         StringBuilder keyName = new StringBuilder();
         StringBuilder value = new StringBuilder();
-        while ((symbol = reader.read()) != -1) {
+        while ((symbol = httpServletInputStream.read()) != -1) {
             if ((char) symbol == ' ') {
                 break;
             }
@@ -362,12 +368,12 @@ public class HttpRequest implements HttpServletRequest {
 
     @Override
     public int getContentLength() {
-        return 0;
+        return contentLength;
     }
 
     @Override
     public long getContentLengthLong() {
-        return 0;
+        return contentLength;
     }
 
     @Override
